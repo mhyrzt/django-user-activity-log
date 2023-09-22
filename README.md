@@ -1,6 +1,7 @@
 This django app intended for writing HTTP log to database and/or watch last user activity.
 
 Features:
+
 - DB router for writing logs to another database.
 - Filters for ignoring some queries by URL, HTTP methods and response codes.
 - Saving anonymous activity as fake user.
@@ -8,10 +9,11 @@ Features:
 
 Install:
 
-$ pip install django-user-activity-log
+```bash
+pip install django-user-activity-log
+```
 
 settings.py:
-
 
 ```python
 INSTALLED_APPS = (
@@ -79,5 +81,4 @@ class User(AbstractUser, UserMixin):
 
 $ python manage.py migrate & python manage.py migrate --database=logs
 
-If you use ACTIVITYLOG_AUTOCREATE_DB migrations to logs database 
-will be run automatically.
+If you use `ACTIVITYLOG_AUTOCREATE_DB`` migrations to logs database will be run automatically.
