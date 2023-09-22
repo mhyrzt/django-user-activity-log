@@ -13,7 +13,7 @@ def get_ip_address(request):
     for header in conf.IP_ADDRESS_HEADERS:
         addr = request.META.get(header)
         if addr:
-            return addr.split(',')[0].strip()
+            return addr.split(",")[0].strip()
 
 
 def get_extra_data(request, response, body):
@@ -23,23 +23,26 @@ def get_extra_data(request, response, body):
 
 
 class ActivityLogMiddleware:
+    def __init__(self, get_response) -> None:
+        self.get_response = get_response
+
     def process_request(self, request):
         request.saved_body = request.body
         if conf.LAST_ACTIVITY and request.user.is_authenticated():
-            getattr(request.user, 'update_last_activity', lambda: 1)()
+            getattr(request.user, "update_last_activity", lambda: 1)()
 
     def process_response(self, request, response):
         try:
-            self._write_log(request, response, getattr(request, 'saved_body', ''))
+            self._write_log(request, response, getattr(request, "saved_body", ""))
         except DisallowedHost:
             return HttpResponseForbidden()
         return response
 
     def _write_log(self, request, response, body):
         miss_log = [
-            not(conf.ANONIMOUS or request.user.is_authenticated()),
+            not (conf.ANONIMOUS or request.user.is_authenticated()),
             request.method not in conf.METHODS,
-            any(url in request.path for url in conf.EXCLUDE_URLS)
+            any(url in request.path for url in conf.EXCLUDE_URLS),
         ]
 
         if conf.STATUSES:
@@ -51,10 +54,10 @@ class ActivityLogMiddleware:
         if any(miss_log):
             return
 
-        if getattr(request, 'user', None) and request.user.is_authenticated():
+        if getattr(request, "user", None) and request.user.is_authenticated():
             user, user_id = request.user.get_username(), request.user.pk
-        elif getattr(request, 'session', None):
-            user, user_id = 'anon_{}'.format(request.session.session_key), 0
+        elif getattr(request, "session", None):
+            user, user_id = "anon_{}".format(request.session.session_key), 0
         else:
             return
 
@@ -65,5 +68,5 @@ class ActivityLogMiddleware:
             request_method=request.method,
             response_code=response.status_code,
             ip_address=get_ip_address(request),
-            extra_data=get_extra_data(request, response, body)
+            extra_data=get_extra_data(request, response, body),
         )

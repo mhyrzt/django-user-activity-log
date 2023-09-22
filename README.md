@@ -10,7 +10,7 @@ Features:
 Install:
 
 ```bash
-pip install django-user-activity-log
+pip install 'django-user-activity-log @ git+https://github.com/mhyrzt/django-user-activity-log.git'
 ```
 
 settings.py:
